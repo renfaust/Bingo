@@ -7,6 +7,12 @@ Bingo Mixer is a social bingo game for in-person mixers. Find people who match t
 📚 **[View Lab Guide](workshop/GUIDE.md)**
 🚀 **[Start with setup flow](workshop/01-setup.md)**
 
+## Development Checklist
+
+- [ ] Lint
+- [ ] Build
+- [ ] Test
+
 ---
 
 ## 📚 Lab Guide
