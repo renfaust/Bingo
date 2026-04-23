@@ -8,15 +8,15 @@ interface BingoSquareProps {
 
 export function BingoSquare({ square, isWinning, onClick }: BingoSquareProps) {
   const baseClasses =
-    'relative flex items-center justify-center p-1 text-center border border-gray-300 rounded transition-all duration-150 select-none min-h-[60px] text-xs leading-tight';
+    'relative flex items-center justify-center p-2 text-center border rounded-2xl transition-all duration-150 select-none min-h-[68px] text-[0.75rem] leading-tight';
 
   const stateClasses = square.isMarked
     ? isWinning
-      ? 'bg-amber-200 border-amber-400 text-amber-900'
-      : 'bg-marked border-marked-border text-green-800'
-    : 'bg-white text-gray-700 active:bg-gray-100';
+      ? 'bg-gradient-to-br from-amber-200 via-orange-100 to-amber-100 border-amber-300 text-amber-950 shadow-inner shadow-amber-300/20'
+      : 'bg-slate-900 border-amber-500 text-amber-100 shadow-sm shadow-slate-950/50'
+    : 'bg-slate-900/80 border-slate-700 text-slate-100 hover:bg-slate-800 active:bg-slate-700';
 
-  const freeSpaceClasses = square.isFreeSpace ? 'font-bold text-sm' : '';
+  const freeSpaceClasses = square.isFreeSpace ? 'font-semibold text-amber-100' : '';
 
   return (
     <button
@@ -28,7 +28,10 @@ export function BingoSquare({ square, isWinning, onClick }: BingoSquareProps) {
     >
       <span className="wrap-break-word hyphens-auto">{square.text}</span>
       {square.isMarked && !square.isFreeSpace && (
-        <span className="absolute top-0.5 right-0.5 text-green-600 text-xs">✓</span>
+        <span className="absolute top-1 right-1 text-amber-300 text-xs">✦</span>
+      )}
+      {square.isFreeSpace && (
+        <span className="absolute -top-1 right-1 text-amber-300 text-xs">★</span>
       )}
     </button>
   );

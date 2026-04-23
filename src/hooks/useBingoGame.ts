@@ -32,6 +32,85 @@ interface StoredGameData {
   winningLine: BingoLine | null;
 }
 
+let audioContext: AudioContext | null = null;
+
+function getAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  if (audioContext) {
+    return audioContext;
+  }
+
+  type AudioContextConstructor = typeof AudioContext;
+  const AudioCtor =
+    window.AudioContext ||
+    (window as unknown as { webkitAudioContext?: AudioContextConstructor }).webkitAudioContext;
+  if (!AudioCtor) {
+    return null;
+  }
+
+  audioContext = new AudioCtor();
+  return audioContext;
+}
+
+function playTone(
+  frequency: number,
+  duration: number,
+  type: OscillatorType = 'sine',
+  startDelay = 0
+): void {
+  const context = getAudioContext();
+  if (!context) {
+    return;
+  }
+
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = type;
+  oscillator.frequency.value = frequency;
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+
+  const startTime = context.currentTime + startDelay;
+  const endTime = startTime + duration;
+
+  gain.gain.setValueAtTime(0.0001, startTime);
+  gain.gain.exponentialRampToValueAtTime(0.18, startTime + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+  oscillator.start(startTime);
+  oscillator.stop(endTime + 0.02);
+}
+
+function ensureAudio(): void {
+  const context = getAudioContext();
+  if (!context) {
+    return;
+  }
+
+  if (context.state === 'suspended') {
+    void context.resume();
+  }
+}
+
+function playDiceRoll(): void {
+  ensureAudio();
+  const baseFrequency = 150 + Math.random() * 50;
+  playTone(baseFrequency, 0.12, 'triangle');
+  playTone(baseFrequency * 1.6, 0.08, 'square', 0.04);
+}
+
+function playVictoryFanfare(): void {
+  ensureAudio();
+  const notes = [220, 276, 330, 392];
+  notes.forEach((frequency, index) => {
+    playTone(frequency, 0.18, 'sine', index * 0.16);
+  });
+}
+
 function validateStoredData(data: unknown): data is StoredGameData {
   if (!data || typeof data !== 'object') {
     return false;
@@ -168,17 +247,18 @@ export function useBingoGame(): BingoGameState & BingoGameActions {
   }, []);
 
   const handleSquareClick = useCallback((squareId: number) => {
+    playDiceRoll();
+
     setBoard((currentBoard) => {
       const newBoard = toggleSquare(currentBoard, squareId);
       
-      // Check for bingo after toggling
       const bingo = checkBingo(newBoard);
       if (bingo && !winningLine) {
-        // Schedule state updates to avoid synchronous setState in effect
         queueMicrotask(() => {
           setWinningLine(bingo);
           setGameState('bingo');
           setShowBingoModal(true);
+          playVictoryFanfare();
         });
       }
       
