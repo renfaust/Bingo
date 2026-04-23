@@ -8,7 +8,7 @@ interface BingoSquareProps {
 
 export function BingoSquare({ square, isWinning, onClick }: BingoSquareProps) {
   const baseClasses =
-    'relative flex items-center justify-center p-2 text-center border rounded-2xl transition-all duration-150 select-none min-h-[68px] text-[0.75rem] leading-tight';
+    'relative flex items-center justify-center p-2 text-center border rounded-2xl transition-all duration-150 select-none min-h-[72px] text-[0.72rem] leading-tight';
 
   const stateClasses = square.isMarked
     ? isWinning
@@ -26,7 +26,7 @@ export function BingoSquare({ square, isWinning, onClick }: BingoSquareProps) {
       aria-pressed={square.isMarked}
       aria-label={square.isFreeSpace ? 'Free space' : square.text}
     >
-      <span className="wrap-break-word hyphens-auto">{square.text}</span>
+      <span className="break-words whitespace-normal hyphens-auto">{square.text}</span>
       {square.isMarked && !square.isFreeSpace && (
         <span className="absolute top-1 right-1 text-amber-300 text-xs">✦</span>
       )}
