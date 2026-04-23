@@ -1,0 +1,12 @@
+{
+  "name": "stop-test-gate",
+  "description": "Run tests and block agent from finishing if any test fails",
+  "triggers": ["PostAgent"],
+  "actions": [
+    {
+      "type": "run",
+      "command": "npm test",
+      "blockOnFailure": true
+    }
+  ]
+}
